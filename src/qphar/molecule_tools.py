@@ -4,7 +4,7 @@ import CDPL.Math as Math
 import CDPL.Pharm as Pharm
 from collections import Iterable
 import os
-from src.pharmacophore_tools import getPharmacophore
+from qphar.pharmacophore_tools import getPharmacophore
 
 
 ALLOWED_ATOMS = [1, 6, 7, 8, 9, 15, 16, 17, 35, 53]

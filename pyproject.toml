@@ -16,7 +16,6 @@ classifiers = [
 ]
 dynamic = [
     "dependencies",
-    "description",
     "optional-dependencies",
     "readme",
     "version"
@@ -26,7 +25,11 @@ dynamic = [
 where = ["src"]
 
 [tool.setuptools.dynamic]
-readme = {file = "README.md", content-type = "text/markdown"}
+dependencies = {file = "requirements.txt"}
+readme = {file = "README.md", content-type = "text/markdow"}
+
+[tool.setuptools.dynamic.optional-dependencies]
+dev = {file = "requirements-dev.txt"}
 
 [tool.setuptools_scm]
 write_to = "src/qphar/_version.py"

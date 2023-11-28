@@ -6,7 +6,7 @@ import CDPL.Chem as Chem
 import CDPL.Pharm as Pharm
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-from src.pharmacophore_tools import getPharmacophore
+from qphar.pharmacophore_tools import getPharmacophore
 
 
 COLOR_MAPPING = {

@@ -6,9 +6,9 @@ import numpy as np
 import pandas as pd
 import sys
 import json
-from src.qphar import LOOKUPKEYS, Qphar
-from src.utils import AlignmentError
-from src.ml_tools import analyse_regression
+from qphar.qphar import LOOKUPKEYS, Qphar
+from qphar.utils import AlignmentError
+from qphar.ml_tools import analyse_regression
 
 
 REQUIREMENTS = {

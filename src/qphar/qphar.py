@@ -11,8 +11,8 @@ import numpy as np
 from collections.abc import Iterable
 from abc import abstractmethod
 import signal
-from src.utils import runTimeHandler, AlignmentError, getClosestFeature, getDistanceWeight, getGaussianWeight, calculateDistance, getFeatureFrequencyWeight
-from src.pharmacophore_tools import getPharmacophore, savePharmacophore, loadPharmacophore
+from qphar.utils import runTimeHandler, AlignmentError, getClosestFeature, getDistanceWeight, getGaussianWeight, calculateDistance, getFeatureFrequencyWeight
+from qphar.pharmacophore_tools import getPharmacophore, savePharmacophore, loadPharmacophore
 
 
 signal.signal(signal.SIGALRM, runTimeHandler)
@@ -155,21 +155,21 @@ class BasicQphar(Pharm.BasicPharmacophore):
             return PLSRegression(**getattr(self, 'modelKwargs', {}))
 
         elif modelType == 'pca_lr':
-            from src.ml_tools import PCAPredictor
+            from qphar.ml_tools import PCAPredictor
             from sklearn.linear_model import LinearRegression
 
             m = LinearRegression(fit_intercept=False)
             return PCAPredictor(m, **getattr(self, 'modelKwargs', {}))
 
         elif modelType == 'pca_ridge':
-            from src.ml_tools import PCAPredictor
+            from qphar.ml_tools import PCAPredictor
             from sklearn.linear_model import Ridge
 
             m = Ridge(fit_intercept=False)
             return PCAPredictor(m, **getattr(self, 'modelKwargs', {}))
 
         elif modelType == 'pca_lasso':
-            from src.ml_tools import PCAPredictor
+            from qphar.ml_tools import PCAPredictor
             from sklearn.linear_model import Lasso
 
             m = Lasso(fit_intercept=False)
@@ -845,7 +845,7 @@ class Qphar(BasicQphar):
         :param kwargs:
         :return:
         """
-        from src.pharmacophore_tools import FEATURE_TYPES
+        from qphar.pharmacophore_tools import FEATURE_TYPES
 
         # cluster the features and store a list of clusters, whereas each feature is referenced in the list by its index
         clusters: Dict[Pharm.FeatureType, List[List[int]]] = {ft: [] for ft in FEATURE_TYPES.values()}
