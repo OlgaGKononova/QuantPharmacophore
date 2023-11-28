@@ -877,7 +877,6 @@ class Qphar(BasicQphar):
                 if calculateDistance(c1, c2) < t:
                     temp.append(j)
                     alreadyInCluster.add(j)
-
             clusters[featureType].append(temp)
         return clusters
 

@@ -5,14 +5,26 @@ import CDPL.Base as Base
 import CDPL.Chem as Chem
 
 
+# FEATURE_TYPES = {
+#     1: Pharm.FeatureType.HYDROPHOBIC,
+#     2: Pharm.FeatureType.AROMATIC,
+#     3: Pharm.FeatureType.NEGATIVE_IONIZABLE,
+#     4: Pharm.FeatureType.POSITIVE_IONIZABLE,
+#     5: Pharm.FeatureType.H_BOND_DONOR,
+#     6: Pharm.FeatureType.H_BOND_ACCEPTOR,
+#     7: Pharm.FeatureType.EXCLUSION_VOLUME,
+# }
 FEATURE_TYPES = {
+    0: Pharm.FeatureType.UNKNOWN,
     1: Pharm.FeatureType.HYDROPHOBIC,
-    2: Pharm.FeatureType.AROMATIC,
-    3: Pharm.FeatureType.NEG_IONIZABLE,
-    4: Pharm.FeatureType.POS_IONIZABLE,
+    2: Pharm.FeatureType.AROMATIC, 
+    3: Pharm.FeatureType.NEGATIVE_IONIZABLE,
+    4: Pharm.FeatureType.POSITIVE_IONIZABLE,
     5: Pharm.FeatureType.H_BOND_DONOR,
     6: Pharm.FeatureType.H_BOND_ACCEPTOR,
-    7: Pharm.FeatureType.X_VOLUME,
+    7: Pharm.FeatureType.HALOGEN_BOND_DONOR,
+    8: Pharm.FeatureType.HALOGEN_BOND_ACCEPTOR,
+    9: Pharm.FeatureType.EXCLUSION_VOLUME
 }
 FEATURE_TYPES_INVERSE = {value: key for key, value in FEATURE_TYPES.items()}
 
@@ -48,7 +60,7 @@ def getPharmacophore(mol: Chem.BasicMolecule, fuzzy=True) -> Pharm.BasicPharmaco
     assert isinstance(mol, Chem.BasicMolecule), "Given object should be of type Chem.BasicMolecule, %s was given" % type(mol)
     Pharm.prepareForPharmacophoreGeneration(mol)  # Fails silently if molecule has coordinates == 0 !!!
     # Chem.makeHydrogenComplete(mol)
-    Chem.generateHydrogen3DCoordinates(mol, False)
+    Chem.calcHydrogen3DCoordinates(mol, False)
     pharm = Pharm.BasicPharmacophore()
     pharm_generator = Pharm.DefaultPharmacophoreGenerator(fuzzy)
     pharm_generator.generate(mol, pharm)

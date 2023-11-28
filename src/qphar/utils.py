@@ -14,9 +14,9 @@ COLOR_MAPPING = {
     Pharm.FeatureType.HYDROPHOBIC: 'yellow',
     Pharm.FeatureType.H_BOND_ACCEPTOR: 'red',
     Pharm.FeatureType.H_BOND_DONOR: 'green',
-    Pharm.FeatureType.NEG_IONIZABLE: 'black',
-    Pharm.FeatureType.POS_IONIZABLE: 'orange',
-    Pharm.FeatureType.X_VOLUME: 'grey'
+    Pharm.FeatureType.NEGATIVE_IONIZABLE: 'black',
+    Pharm.FeatureType.POSITIVE_IONIZABLE: 'orange',
+    Pharm.FeatureType.EXCLUSION_VOLUME: 'grey'
 }
 
 

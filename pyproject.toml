@@ -1,0 +1,32 @@
+[build-system]
+requires = [
+    "setuptools>=42",
+    "setuptools-scm[toml]"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qphar"
+requires-python = ">=3.7"
+classifiers = [
+    # -- Do not remove these classifiers --
+    "Private :: Do Not Upload",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+]
+dynamic = [
+    "dependencies",
+    "description",
+    "optional-dependencies",
+    "readme",
+    "version"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+readme = {file = "README.md", content-type = "text/markdown"}
+
+[tool.setuptools_scm]
+write_to = "src/qphar/_version.py"
