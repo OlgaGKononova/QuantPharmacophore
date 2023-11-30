@@ -1,6 +1,0 @@
-{
-  "weightType": ["distance", "nrOfFeatures", null],
-  "modelType": ["randomForest", "ridge", "pca_ridge", "pca_lr"],
-  "threshold": [1, 1.5, 2],
-  "metric": ["RMSE", "R2"]
-}
