@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
-from src.modules import loadParams, loadMolecules, saveMolecules, savePerformance
-from src.modules import gridSearch
+from qphar.modules import loadParams, loadMolecules, saveMolecules, savePerformance
+from qphar.modules import gridSearch
 
 
 if __name__ == '__main__':

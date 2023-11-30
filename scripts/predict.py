@@ -1,9 +1,9 @@
 from argparse import ArgumentParser
 import os
 import json
-from src.modules import loadMolecules, saveMolecules, addPropertyToSDFData
-from src.pharmacophore_tools import loadPharmacophore
-from src.qphar import Qphar
+from qphar.modules import loadMolecules, saveMolecules, addPropertyToSDFData
+from qphar.pharmacophore_tools import loadPharmacophore
+from qphar.qphar import Qphar
 
 
 if __name__ == '__main__':

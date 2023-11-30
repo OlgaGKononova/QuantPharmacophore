@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from src.modules import checkDataRequirements, loadMolecules
+from qphar.modules import checkDataRequirements, loadMolecules
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
-from src.modules import loadParams, loadMolecules, DEFAULT_TRAINING_PARAMETERS, splitSamplesActivities, saveMolecules, savePerformance, plotPredictionsFromMolecules
-from src.modules import makeTrainingRun, makeTrainingTestRun
+from qphar.modules import loadParams, loadMolecules, DEFAULT_TRAINING_PARAMETERS, splitSamplesActivities, saveMolecules, savePerformance, plotPredictionsFromMolecules
+from qphar.modules import makeTrainingRun, makeTrainingTestRun
 import os
 
 
@@ -25,7 +25,7 @@ if __name__ == '__main__':
         for key, value in customParams.items():
             params[key] = value
             if key == 'modelType':
-                from src.modules import DEFAULT_MODEL_PARAMETERS
+                from qphar.modules import DEFAULT_MODEL_PARAMETERS
 
                 params['modelParams'] = DEFAULT_MODEL_PARAMETERS[value]
 

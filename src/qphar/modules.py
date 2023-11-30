@@ -1,4 +1,5 @@
 from typing import List
+from tqdm import tqdm
 
 import CDPL.Chem as Chem
 import CDPL.Pharm as Pharm
@@ -22,7 +23,7 @@ DEFAULT_TRAINING_PARAMETERS = {
     'fuzzy': True,
     'weightType': 'distance',
     'modelType': 'randomForest',
-    'modelKwargs': {'n_estimators': 10, 'max_depth': 3},
+    'modelParams': {'n_estimators': 10, 'max_depth': 3},
     'threshold': 1.5,
     'mergeOnce': True,
     'metric': 'R2'
@@ -33,7 +34,8 @@ DEFAULT_MODEL_PARAMETERS = {
     'ridge': {'fit_intercept': False},
     'pca_ridge': {},
     'pls': {},
-    'pca_lr': {}
+    'pca_lr': {},
+    'svm': {"kernel": "linear", "gamma": 10}
 }
 
 
@@ -164,7 +166,8 @@ def splitData(molecules, activityName, validationFraction=None, testFraction=Non
 
 
 def splitSamplesActivities(samples, activityName):
-    from src.utils import extractActivityFromMolecule
+    print("Splitting samples activities...")
+    from qphar.utils import extractActivityFromMolecule
 
     molecules, activities = [], []
     for i, mol in enumerate(samples):
@@ -281,9 +284,10 @@ def makeTrainingRun(molecules, activities, parameters):
     :param parameters:
     :return:
     """
-    from src.utils import selectMostRigidMolecule
+    from qphar.utils import selectMostRigidMolecule
 
     # prepare data
+    print("Preparing data for training...")
     templateIndex, remainingMoleculesIndices = selectMostRigidMolecule(molecules, returnIndices=True)
     template = molecules[templateIndex]
     remainingMolecules = [molecules[k] for k in remainingMoleculesIndices]
@@ -293,9 +297,11 @@ def makeTrainingRun(molecules, activities, parameters):
     trainingSet.extend(remainingMolecules)
 
     # train
+    print("Running training...")
     models, predictions = train(template, remainingMolecules, parameters)  # predictions are [template, *remaining]
 
     # evaluate and select best model
+    print("Evaluating results...")
     performance = {}
     for i, y_pred in enumerate(predictions):
         performance[i] = analyse_regression(np.array(reorderdedActivities), y_pred)
@@ -321,9 +327,10 @@ def makeTrainingTestRun(trainingMolecules, trainingActivities, testMolecules, te
     :param parameters:
     :return:
     """
-    from src.utils import selectMostRigidMolecule
+    from qphar.utils import selectMostRigidMolecule
 
     # prepare data
+    print("Preparing data for training...")
     templateIndex, remainingMoleculesIndices = selectMostRigidMolecule(trainingMolecules, returnIndices=True)
     template = trainingMolecules[templateIndex]
     remainingMolecules = [trainingMolecules[k] for k in remainingMoleculesIndices]
@@ -333,9 +340,12 @@ def makeTrainingTestRun(trainingMolecules, trainingActivities, testMolecules, te
     trainingSet.extend(remainingMolecules)
 
     # train
+    print("Running training...")
+    print(parameters)
     models, trainingpredictions = train(template, remainingMolecules, parameters)  # predictions are [template, *remaining]
 
     # evaluate and select based model based on _test set
+    print("Evaluating results on a test set...")
     testPerformance = {}
     testPredictions = {}
     for i, model in enumerate(models):
@@ -364,7 +374,7 @@ def train(template, remainingSamples, params):
     models, predictions = [], []
     trainingSet = [template]
     trainingSet.extend(remainingSamples)
-    for j in range(len(remainingSamples)):
+    for j in tqdm(range(len(remainingSamples)), desc="Training", ascii=True):
         try:
             model = Qphar([template, remainingSamples[j]],
                           **{k: v for k, v in params.items() if k != 'logPath'})
@@ -391,7 +401,7 @@ def gridSearch(datasets, searchParams, nrProcesses=1, outputPath=None):
 
     from itertools import product
     import os
-    from src.utils import make_activity_plot
+    from qphar.utils import make_activity_plot
     import matplotlib.pyplot as plt
 
     # create folder where all results are saved to
@@ -417,7 +427,7 @@ def gridSearch(datasets, searchParams, nrProcesses=1, outputPath=None):
         allParams = {k: v for k, v in DEFAULT_TRAINING_PARAMETERS.items()}
         for k, v in params.items():
             allParams[k] = v
-        allParams['modelKwargs'] = DEFAULT_MODEL_PARAMETERS.get(params['modelType'], {})
+        #allParams['modelParams'] = DEFAULT_MODEL_PARAMETERS.get(params['modelType'], {})
         allParams['i'] = len(jobs)
 
         jobs.append((datasets, allParams, outputPath, i))
@@ -505,7 +515,8 @@ def loadParams(path):
 
 
 def loadMolecules(path, multiconf=True):
-    from src.molecule_tools import SDFReader
+    print("Loading molecules...")
+    from qphar.molecule_tools import SDFReader
 
     r = SDFReader(path, multiconf=multiconf)
     molecules = [mol for mol in r]
@@ -517,7 +528,7 @@ def loadMolecules(path, multiconf=True):
 
 
 def saveMolecules(molecules, path, multiconf=True):
-    from src.molecule_tools import mol_to_sdf
+    from qphar.molecule_tools import mol_to_sdf
 
     # add activity property if present, so we can access it later on by the known name
     for mol in molecules:
@@ -569,7 +580,7 @@ def runParallel(targetFn, jobs, nrProcesses=2):
 
 
 def plotPredictionsFromMolecules(molecules, path):
-    from src.utils import make_activity_plot
+    from qphar.utils import make_activity_plot
     import matplotlib.pyplot as plt
 
     y_true, y_pred = [], []

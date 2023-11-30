@@ -1,4 +1,5 @@
 from typing import List, Union, Tuple, Dict, Set, Any
+from tqdm import tqdm
 
 import CDPL.Pharm as Pharm
 import CDPL.Chem as Chem
@@ -56,7 +57,7 @@ class BasicQphar(Pharm.BasicPharmacophore):
     def __init__(self,
                  template: Union[Pharm.BasicPharmacophore, Tuple[Chem.BasicMolecule, Chem.BasicMolecule]] = None,
                  modelType: str = 'linearRegression',
-                 modelKwargs: Dict[str, Any] = None,
+                 modelParams: Dict[str, Any] = None,
                  logPath: str = None,
                  weightType: str = 'distance',
                  name: str = 'Hyperpharmacophore',
@@ -67,7 +68,7 @@ class BasicQphar(Pharm.BasicPharmacophore):
         super(BasicQphar, self).__init__()
         self.template = template
         self.modelType = modelType
-        self.modelKwargs = {} if modelKwargs is None else modelKwargs
+        self.modelKwargs = {} if modelParams is None else modelParams
         self.logPath = logPath
         self.weightType = weightType
         self.name = name
@@ -174,6 +175,9 @@ class BasicQphar(Pharm.BasicPharmacophore):
 
             m = Lasso(fit_intercept=False)
             return PCAPredictor(m, **getattr(self, 'modelKwargs', {}))
+        elif modelType == "svm":
+            from sklearn.svm import SVC
+            return SVC(**getattr(self, 'modelKwargs', {}))
 
         else:
             raise ValueError(
@@ -941,7 +945,7 @@ class Qphar(BasicQphar):
 
         # get feature data from prediction samples
         scores, featureData, alignedPharmacophores = [], [], []
-        for s in samples:
+        for s in tqdm(samples, desc="prediction", ascii=True):
             try:
                 if ignoreAlign and isinstance(s, Pharm.BasicPharmacophore):
                     alignedPharmacophore = s

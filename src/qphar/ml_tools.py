@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import mean_squared_error, r2_score, confusion_matrix  
 from sklearn.decomposition import PCA
 
 
@@ -53,40 +53,61 @@ def analyse_regression(y_true: np.ndarray, y_pred: np.ndarray, weights=None) -> 
     assert not np.any(np.isnan(y_true)) and not np.any(np.isnan(y_pred)), 'y_true: %s\ny_pred: %s' % (str(y_true), str(y_pred))
     assert not np.any(np.isinf(y_true)) and not np.any(np.isinf(y_pred)), 'y_true: %s\ny_pred: %s' % (str(y_true), str(y_pred))
     y_true = y_true.flatten()
-    y_pred = y_pred.flatten()
-    try:
-        mse = mean_squared_error(y_true, y_pred, sample_weight=weights, squared=True)
-        rmse = mean_squared_error(y_true, y_pred, sample_weight=weights, squared=False)
-    except ValueError:
-        return {"MSE": None,
-                "RMSE": None,
-                "Mean error": None,
-                "Std error": None,
-                "Nr samples": None,
-                "Median error": None,
-                "Max error": None,
-                "Min error": None,
-                "1st quartile error": None,
-                "3rd quartile error": None,
-                "Prediction range": None,
-                "True range": None,
-                "R2": None,
-                }
-    diff = np.absolute(y_true - y_pred)
-    return {"MSE": mse,
-            "RMSE": rmse,
-            "Mean error": np.average(diff, weights=weights),
-            "Std error": np.std(diff),
-            "Nr samples": y_true.shape[0],
-            "Median error": np.median(diff),
-            "Max error": np.max(diff),
-            "Min error": np.min(diff),
-            "1st quartile error": np.percentile(diff, 25),
-            "3rd quartile error": np.percentile(diff, 75),
-            "Prediction range": np.max(y_pred) - np.min(y_pred),
-            "True range": np.max(y_true) - np.min(y_true),
-            "R2": r2_score(y_true, y_pred)
-            }
+    y_pred = (y_pred.flatten() >= 0.5).astype(int)
+    tn, fp, fn, tp = confusion_matrix(y_true=y_true, y_pred=y_pred).ravel()
+    if tp == 0:
+        precision = 0.0,
+        recall = 0.0, 
+        f1 = 0.0,
+        acc = 0.0
+    else:
+        precision = float(round(tp / (tp + fp), 3))
+        recall = float(round(tp / (tp + fn), 3)) 
+        f1=float(round(2*tp / (2 * tp + fp + fn), 3))
+        acc=float(round((tp + tn)/(tp + tn + fp + fn), 3))
+        
+    return dict(TN=int(tn),
+                TP=int(tp),
+                FN=int(fn),
+                FP=int(fp),
+                precision = precision,
+                recall = recall, 
+                f1 = f1,
+                acc = acc)
+    
+    # try:
+    #     mse = mean_squared_error(y_true, y_pred, sample_weight=weights, squared=True)
+    #     rmse = mean_squared_error(y_true, y_pred, sample_weight=weights, squared=False)
+    # except ValueError:
+    #     return {"MSE": None,
+    #             "RMSE": None,
+    #             "Mean error": None,
+    #             "Std error": None,
+    #             "Nr samples": None,
+    #             "Median error": None,
+    #             "Max error": None,
+    #             "Min error": None,
+    #             "1st quartile error": None,
+    #             "3rd quartile error": None,
+    #             "Prediction range": None,
+    #             "True range": None,
+    #             "R2": None,
+    #             }
+    # diff = np.absolute(y_true - y_pred)
+    # return {"MSE": mse,
+    #         "RMSE": rmse,
+    #         "Mean error": np.average(diff, weights=weights),
+    #         "Std error": np.std(diff),
+    #         "Nr samples": y_true.shape[0],
+    #         "Median error": np.median(diff),
+    #         "Max error": np.max(diff),
+    #         "Min error": np.min(diff),
+    #         "1st quartile error": np.percentile(diff, 25),
+    #         "3rd quartile error": np.percentile(diff, 75),
+    #         "Prediction range": np.max(y_pred) - np.min(y_pred),
+    #         "True range": np.max(y_true) - np.min(y_true),
+    #         "R2": r2_score(y_true, y_pred)
+    #         }
 
 
 def aggregateRegressionCrossValidationResults(results):

@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from src.modules import splitData, loadMolecules, saveMolecules
+from qphar.modules import splitData, loadMolecules, saveMolecules
 import os
 
 
